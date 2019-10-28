@@ -1,0 +1,18 @@
+---
+title: "ESM 206 Lab 5"
+author: "Lucas Empson"
+date: "10/28/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+
+
+
+
