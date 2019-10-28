@@ -9,7 +9,65 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Objectives
 
+- Getting counts for different groups
+- Use {lubridate} to parse dates
+- Find confidence intervals and to t-ests with t.test()
+- Heatmap with geom_tile()
+
+```{r, include = FALSE}
+# Attach packages
+
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+# Import lobster data
+# read.csv reads strings as factors, we don't want that
+lobster_abundance <- read_csv(here::here("data", "lobster_abundance.csv"),
+                              na = "-99999") %>% 
+  clean_names()
+
+# How is this not in tidy format?
+# - Each observation has its own row in tidy format
+# - If needed to find mean of size_mm, the lobster count would mean we have to account for the weight of lobster_count
+# - This is called a frequency table
+```
+
+Use the tidyr::uncount() function to expand a frequency table
+```{r}
+lobster_tidy <- lobster_abundance %>%
+  tidyr::uncount(lobster_count)
+```
+
+Now each lobster has its own row. This is tidy format.
+
+Now look at the data in a bunch of different ways (exploratory data visualization)
+```{r}
+
+ggplot(data = lobster_tidy, aes(x = site, y = size_mm)) +
+  geom_jitter(aes(color = site), 
+              width = 0.2,
+              alpha = 0.3)
+
+ggplot(data = lobster_tidy, aes(x = site, y = size_mm)) +
+  geom_violin(aes(color = site),
+              alpha = 0.3)
+
+# Does it look like these observations are relatively normally distributed? Is there skew? Still kind of difficult to do using geom_violin
+
+ggplot(data = lobster_tidy, aes(x = size_mm)) +
+  geom_histogram(aes(fill = site)) + # what code can we use so they are not all overlapped? facet_wrap()
+  facet_wrap(~site, scales = "free") # scales will differ for each facet based on maximum and minimums in each group (if the point is comparing across groups, not a good idea, but we're just looking to see how data is distributed within each group. In general all relatively bell shaped (exception MOHK, but overall yes)
+
+ggplot(data = lobster_tidy, aes(sample = size_mm)) +
+  geom_qq(size = 0.5) + 
+  facet_wrap(~site, scales = "free") 
+# This tells a different story than what we originally thought from previous graph
+```
 
 
 
